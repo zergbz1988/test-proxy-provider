@@ -1,0 +1,20 @@
+version: '3'
+services:
+  postgres-for-tests:
+    image: 'postgres:14'
+    ports:
+      - '${FORWARD_DB_TEST_PORT:-5432}:5432'
+    environment:
+      PGPASSWORD: '${DB_TEST_PASSWORD:-secret}'
+      POSTGRES_DB: '${DB_TEST_DATABASE}'
+      POSTGRES_USER: '${DB_TEST_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_TEST_PASSWORD:-secret}'
+      PGDATA: '/pgtest-data'
+    tmpfs:
+      - /pgtest-data
+    networks:
+      - sail
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_TEST_DATABASE}", "-U", "${DB_TEST_USERNAME}" ]
+      retries: 3
+      timeout: 5s

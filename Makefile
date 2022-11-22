@@ -1,4 +1,4 @@
-install: env sail-install up composer-install
+install: env sail-install up composer-install keys migrate
 
 env:
 	test -s .env || cp .env.example .env
@@ -19,4 +19,22 @@ up:
 down:
 	vendor/bin/sail down
 
+composer-update:
+	vendor/bin/sail composer update $(pkg)
 
+composer-require:
+	vendor/bin/sail composer require $(pkg)
+
+art:
+	vendor/bin/sail artisan $(cmd)
+
+keys:
+	vendor/bin/sail artisan key:generate && \
+	vendor/bin/sail artisan jwt:secret && \
+	vendor/bin/sail artisan jwt:generate-certs --force --algo=rsa --bits=4096 --sha=512
+
+migrate:
+	vendor/bin/sail artisan migrate
+
+test:
+	vendor/bin/sail artisan test
